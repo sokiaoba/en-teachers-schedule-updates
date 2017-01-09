@@ -29,27 +29,24 @@ class Teacher:
 		try: 
 			url = self.getIndexUrl(teacherId)
 			req = urllib2.urlopen(url)
+
+			if not req.geturl() == url:
+				raise Exception
+
+			tags = re.findall('<a.+?class="bt-open".*?>', req.read())
+
+			availableTimes = []
+			for tag in tags:
+				_id = re.match('<a.+?id="(.+)".*>', tag).groups()[0]
+				_id = _id.replace("&quot;", '"')
+
+				availableTime = phpserialize.unserialize(_id)["launched"]
+				availableTimes.append(availableTime)
+
+			return availableTimes
+
 		except:
 			return None
-
-		if not req.geturl() == url:
-			return None
-
-		tags = re.findall('<a.+?class="bt-open".*?>', req.read())
-
-		availableTimes = []
-		for tag in tags:
-			_id = re.match('<a.+?id="(.+)".*>', tag).groups()[0]
-			_id = _id.replace("&quot;", '"')
-
-			try:
-				availableTime = phpserialize.unserialize(_id)["launched"]
-			except:
-				return None
-
-			availableTimes.append(availableTime)
-
-		return availableTimes
 
 	def getIndexUrl(self, teacherId):
 		return "http://eikaiwa.dmm.com/teacher/index/" + str(teacherId) + "/"
