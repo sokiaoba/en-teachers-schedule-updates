@@ -18,11 +18,24 @@ if not os.path.exists(data_dir + "/schedules.json"):
 	FileManager.write(data_dir + "/schedules.json", json.dumps([]))
 
 teacher = Teacher(teachers)
+slack = Slack(slackAccessToken)
 
 (schedules, updatedTeachers) = ([], [])
 for t in teachers:
-	previousAvailableTimes = teacher.getPreviousAvailableTimes(t["id"])
 	availableTimes = teacher.getAvailableTimes(t["id"])
+
+	if availableTimes is None:
+		msg = "Oops, something wrong has happened in " + t["name"] + "'s page.\n"
+		msg += teacher.getIndexUrl(t["id"])
+
+		slack.postMessage({
+			"channel" : slackChannel,
+			"username" : "error",
+			"text" : msg,
+		})
+		continue
+	
+	previousAvailableTimes = teacher.getPreviousAvailableTimes(t["id"])
 
 	isUpdated = not set(availableTimes).issubset(set(previousAvailableTimes))
 	if (isUpdated):
@@ -34,11 +47,9 @@ for t in teachers:
 	})
 
 if updatedTeachers:
-	slack = Slack(slackAccessToken)
-
 	for t in updatedTeachers:
 		msg = t["name"] + "'s lessons have been updated.\n"
-		msg += teacher.baseUrl + "/teacher/index/" + str(t["id"])
+		msg += teacher.getIndexUrl(t["id"])
 
 		slack.postMessage({
 			"channel" : slackChannel,

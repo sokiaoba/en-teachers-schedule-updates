@@ -10,8 +10,6 @@ from FileManager import FileManager
 
 class Teacher:
 
-	baseUrl = "http://eikaiwa.dmm.com"
-
 	__teachers = None
 	__previousSchedules = None
 	__previousScheduleDict = None
@@ -28,17 +26,33 @@ class Teacher:
 			return []
 
 	def getAvailableTimes(self, teacherId):
-		html = urllib2.urlopen(self.baseUrl + "/teacher/index/" + str(teacherId)).read()
-		tags = re.findall('<a.+?class="bt-open".*?>', html)
+		try: 
+			url = self.getIndexUrl(teacherId)
+			req = urllib2.urlopen(url)
+		except:
+			return None
+
+		if not req.geturl() == url:
+			return None
+
+		tags = re.findall('<a.+?class="bt-open".*?>', req.read())
 
 		availableTimes = []
 		for tag in tags:
 			_id = re.match('<a.+?id="(.+)".*>', tag).groups()[0]
 			_id = _id.replace("&quot;", '"')
-			availableTime = phpserialize.unserialize(_id)["launched"]
+
+			try:
+				availableTime = phpserialize.unserialize(_id)["launched"]
+			except:
+				return None
+
 			availableTimes.append(availableTime)
 
 		return availableTimes
+
+	def getIndexUrl(self, teacherId):
+		return "http://eikaiwa.dmm.com/teacher/index/" + str(teacherId) + "/"
 
 	def __getPreviousScheduleDict(self):
 		def setSchedule(_dict, schedule):
