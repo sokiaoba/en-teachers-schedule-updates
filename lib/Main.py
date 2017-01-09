@@ -25,7 +25,7 @@ for t in teachers:
 	availableTimes = teacher.getAvailableTimes(t["id"])
 
 	if availableTimes is None:
-		msg = "Oops, something wrong has happened in " + t["name"] + "'s page.\n"
+		msg = "Oops, something wrong happened in " + t["name"] + "'s page.\n"
 		msg += teacher.getIndexUrl(t["id"])
 
 		slack.postMessage({
@@ -38,7 +38,7 @@ for t in teachers:
 	previousAvailableTimes = teacher.getPreviousAvailableTimes(t["id"])
 
 	isUpdated = not set(availableTimes).issubset(set(previousAvailableTimes))
-	if (isUpdated):
+	if isUpdated:
 		updatedTeachers.append(t)
 
 	schedules.append({
