@@ -1,4 +1,4 @@
-Script to notify updates of your favaorite teachers' lessons in DMM Eikaiwa through Slack.
+Script to notify updates of your favaorite teachers' lessons in DMM Eikaiwa through Slack.  
 To use this, you have to set your configuration in lib/Config.py like following.
 
 ```
