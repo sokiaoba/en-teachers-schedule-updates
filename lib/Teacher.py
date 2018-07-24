@@ -49,7 +49,7 @@ class Teacher:
 			return None
 
 	def getIndexUrl(self, teacherId):
-		return "http://eikaiwa.dmm.com/teacher/index/" + str(teacherId) + "/"
+		return "https://eikaiwa.dmm.com/teacher/index/" + str(teacherId) + "/"
 
 	def __getPreviousScheduleDict(self):
 		def setSchedule(_dict, schedule):
